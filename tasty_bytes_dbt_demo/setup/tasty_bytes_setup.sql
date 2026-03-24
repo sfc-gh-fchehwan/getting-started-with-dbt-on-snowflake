@@ -15,6 +15,7 @@ CREATE OR REPLACE SCHEMA tasty_bytes_dbt_db.raw;
 CREATE OR REPLACE SCHEMA tasty_bytes_dbt_db.dev;
 CREATE OR REPLACE SCHEMA tasty_bytes_dbt_db.prod;
 
+SHOW NETWORK RULES IN ACCOUNT;
 
 ALTER SCHEMA tasty_bytes_dbt_db.dev SET LOG_LEVEL = 'INFO';
 ALTER SCHEMA tasty_bytes_dbt_db.dev SET TRACE_LEVEL = 'ALWAYS';
@@ -24,10 +25,10 @@ ALTER SCHEMA tasty_bytes_dbt_db.prod SET LOG_LEVEL = 'INFO';
 ALTER SCHEMA tasty_bytes_dbt_db.prod SET TRACE_LEVEL = 'ALWAYS';
 ALTER SCHEMA tasty_bytes_dbt_db.prod SET METRIC_LEVEL = 'ALL';
 
-CREATE OR REPLACE API INTEGRATION git_integration
-  API_PROVIDER = git_https_api
-  API_ALLOWED_PREFIXES = ('https://github.com/')
-  ENABLED = TRUE;
+--CREATE OR REPLACE API INTEGRATION git_integration
+--  API_PROVIDER = git_https_api
+--  API_ALLOWED_PREFIXES = ('https://github.com/')
+--  ENABLED = TRUE;
 
 CREATE OR REPLACE FILE FORMAT tasty_bytes_dbt_db.public.csv_ff 
 type = 'csv';
@@ -213,3 +214,18 @@ FROM @tasty_bytes_dbt_db.public.s3load/raw_pos/order_detail/;
 
 -- setup completion note
 SELECT 'tasty_bytes_dbt_db setup is now complete' AS note;
+
+SHOW DBT PROJECTS IN ACCOUNT;
+
+SHOW EXTERNAL ACCESS INTEGRATIONS;
+
+SHOW WORKSPACES IN ACCOUNT;
+
+
+-- executes the dbt deps command for the PROJECT
+execute dbt project from workspace "USER$FCHEHWAN"."PUBLIC"."getting-started-with-dbt-on-snowflake" project_root='tasty_bytes_dbt_demo' args='deps --target dev' external_access_integrations = (dbt_ext_access)
+
+-- compiling dbt project
+execute dbt project from workspace "USER$"."PUBLIC"."getting-started-with-dbt-on-snowflake" project_root='/tasty_bytes_dbt_demo' args='compile --target dev'
+
+dbt compile --project-dir /tasty_bytes_dbt_demo
